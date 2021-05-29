@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+    db:
+        container_name: open-accounting-db
+        image: postgres:11 # we will use postgres:11 image from docker hub for database
+        environment:
+         - POSTGRES_USER=odoo # Set value of postgres credential
+         - POSTGRES_PASSWORD=odoo
+         - POSTGRES_DB=postgres
+         - PGDATA=/var/lib/postgresql/data/pgdata
+        volumes:
+         - open-accounting-db-data:/var/lib/postgresql/data/pgdata # set postgresql data persistence
+    odoo:
+        container_name: open-accounting
+        image: odoo:12.0
+        volumes:
+         - ./extra-addons:/mnt/extra-addons
+         - ./config:/etc/odoo
+         - open-accounting-web-data:/var/lib/odoo
+        ports:
+         - "8069:8069" # this will create connection port between host and container, this means host_port:container_port
+        depends_on:
+         - db # set depends on postgresql db
+
+volumes:
+    open-accounting-web-data:
+    open-accounting-db-data:
